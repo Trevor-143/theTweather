@@ -1,0 +1,149 @@
+<script setup>
+import { ref, onBeforeMount, } from "vue";
+
+const current = ref([])
+const location = ref([])
+const condition = ref([])
+const search_value = ref('')
+const options = {
+	method: 'GET',
+	headers: {
+		'X-RapidAPI-Key': 'f6dd938eacmsh0d384b1080b54fbp10dd7cjsn5485a7bd7a65',
+		'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
+	}
+};
+
+onBeforeMount(() => {
+  fetch('https://weatherapi-com.p.rapidapi.com/current.json?q=Kampala', options)
+	.then(response => response.json())
+	.then(data => {
+    current.value = data.current
+    location.value = data.location
+    condition.value = data.current.condition
+  })
+})
+const findWeather = () => {
+  if(search_value.value !== '' || search_value.value !== null) {
+    fetch(`https://weatherapi-com.p.rapidapi.com/current.json?q=${ search_value.value }`, options)
+    .then(response => response.json())
+    .then(data => {
+      current.value = data.current
+      location.value = data.location
+      condition.value = data.current.condition
+    })
+    search_value.value = ''
+  }
+}
+
+</script>
+
+<template>
+  <div class="home">
+    <form @submit.prevent="findWeather()">
+      <input type="text" v-model="search_value">
+      <input type="submit" value="search">
+    </form>
+    <div class="main">
+      <h2>{{ current.temp_c }}°</h2>
+      <h3>{{ condition.text }}</h3>
+    </div>
+    <div class="subMain">
+      <img :src="condition.icon" alt="">
+      <h3>{{ location.tz_id }}</h3>
+    </div>
+  </div>
+  <footer>
+    <h3>&copy 2023</h3>
+    <p>Powered by the weatherAPI</p>
+  </footer>
+</template>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,800;1,900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'poppins', sans-serif;
+}
+
+body {
+  background-image: linear-gradient(to bottom right, rgb(8, 19, 80), rgba(8, 157, 202, 0.4));
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  height: 100%;
+}
+
+form {
+  border: none;
+  background-color: #fff;
+  color: rgb(133, 133, 133);
+  padding: 5px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+form input[type=text] {
+  background: none;
+  border: none;
+  padding-left: 15px;
+  transition: 0.5s ease-in-out;
+  width: 70%;
+}
+
+form input[type=text]:focus {
+  background: none;
+  outline: none;
+}
+
+form input[type=submit] {
+  padding: 7px;
+  border: none;
+  background: #081350;
+
+  color: #fff;
+  border-radius: 15px;
+
+}
+.main {
+  text-align: center;
+  color: #fff;
+}
+.main h2 {
+  font-size: 100px;
+  color: #fff;
+  font-weight: 400;
+}
+
+.subMain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-wrap: wrap;
+}
+
+.subMain img {
+  margin: 7px;
+}
+
+footer {
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #fff;
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+</style>
